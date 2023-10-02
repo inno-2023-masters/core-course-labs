@@ -1,0 +1,9 @@
+django_env
+__pycache__
+db.sqlite3
+
+.DS_STORE
+app_python/myproject/myproject/settings.py
+*~
+*.pyc
+.vscode
