@@ -1,0 +1,7 @@
+[type_vkcs_compute_floatingip_associate]
+
+[vk_cloud:children]
+type_vkcs_compute_floatingip_associate
+
+[vk_cloud:vars]
+ansible_user=ubuntu

@@ -1,0 +1,91 @@
+name: Cpp application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    paths:
+      - app_cpp/**
+      - .github/workflows/cpp-app.yml
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: ./app_cpp
+
+jobs:
+  test:
+    name: Test application
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+  
+      - name: Update apt
+        run: |
+          sudo apt-get update
+
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.4
+        id: install-boost
+        with:
+              boost_version: 1.83.0
+  
+      - name: Build tests
+        run: |
+          cmake -Bbuild -Hsrc -DCMAKE_BUILD_TYPE=Release -DTESTING=TRUE && cmake --build build
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+      - name: Test with unittest
+        run: |
+          ./build/Test/hello_test
+
+  container:
+    needs: [test]
+    name: Docker-container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: app_cpp
+          file: app_cpp/Dockerfile
+          push: true
+          tags: muurrk/myapp_cpp:latest
+          cache-from: type=registry,ref=muurrk/myapp_cpp:buildcache
+          cache-to: type=registry,ref=muurrk/myapp_cpp:buildcache,mode=max
+  
+  snyk-docker:
+    runs-on: ubuntu-latest
+    needs: [container]
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check Docker image for vulnerabilities
+        uses: snyk/actions/docker@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: muurrk/myapp_cpp:latest
+          args: --file=app_cpp/Dockerfile --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif

@@ -1,0 +1,17 @@
+- name: Do apt update
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install pip
+  become: yes
+  ansible.builtin.apt:
+    name: python3-pip
+    update_cache: yes
+
+- name: Install Docker and Docker Compose
+  become: yes
+  pip:
+    name:
+      - docker
+      - docker-compose
