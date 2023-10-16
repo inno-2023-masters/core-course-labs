@@ -1,0 +1,12 @@
+click==8.1.2
+Flask==2.2.5
+importlib-metadata==4.11.3
+itsdangerous==2.1.2
+Jinja2==3.1.1
+MarkupSafe==2.1.1
+Werkzeug==2.2.3
+zipp==3.8.0
+pytz==2023.3
+python-dateutil==2.8.2
+ruff==0.0.290
+pytest==7.4.2
