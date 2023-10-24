@@ -1,0 +1,6 @@
+version: '3'
+services:
+  web_app:
+    build: .
+    ports:
+      - 80:{{ application_port }}

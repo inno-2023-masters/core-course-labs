@@ -1,0 +1,4 @@
+Django==4.1.11
+black==22.3.0
+pylint==v3.0.0a3
+django-prometheus==2.3.1

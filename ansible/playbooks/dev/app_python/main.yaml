@@ -1,0 +1,9 @@
+- name: Deploy web app
+  hosts: all
+  remote_user: ubuntu
+
+  roles:
+    - web_app
+  vars:
+    application_port: 8000
+    docker_image: klemencja/app_python

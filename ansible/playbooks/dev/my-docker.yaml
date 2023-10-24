@@ -1,0 +1,6 @@
+- name: My docker role
+  hosts: all
+  remote_user: ubuntu
+
+  roles:
+    - { role: docker, become: yes }

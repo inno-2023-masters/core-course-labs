@@ -1,0 +1,147 @@
+version: "3"
+
+networks:
+  app_network:
+
+services:
+  python_app:
+    platform: linux/x86_64
+    container_name: python_app
+    image: klemencja/app_python
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    ports:
+      - "80:8000"
+    networks:
+      - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/metrics" ]
+      interval: 10s
+      timeout: 10s
+      retries: 2
+
+  kotlin_app:
+    platform: linux/x86_64
+    container_name: kotlin_app
+    image: klemencja/app_kotlin
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    ports:
+      - "81:8080"
+    networks:
+      - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+
+  loki:
+    image: grafana/loki:2.9.1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
+
+  promtail:
+    image: grafana/promtail:2.9.1
+    volumes:
+      - ${PWD}/config/promtail.yml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9080:9080"
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - app_network
+    depends_on:
+      - loki
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
+
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - /run.sh
+    volumes:
+      - ./config/grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
+
+  prometheus:
+    image: prom/prometheus
+    hostname: prometheus-host
+    user: root
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app_network
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"

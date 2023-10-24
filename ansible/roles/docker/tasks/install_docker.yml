@@ -1,0 +1,3 @@
+- name: Install docker
+  ansible.builtin.shell:
+    curl -sSL get.docker.com | sh

@@ -1,0 +1,15 @@
+- name: Install pip, docker and docker-compose
+  tags: prepare
+  become: true
+  block:
+    - name: Install pip
+      ansible.builtin.include_tasks:
+        file: install_pip.yml
+
+    - name: Include install_docker
+      ansible.builtin.include_tasks:
+        file: install_docker.yml
+
+    - name: Include install_compose
+      ansible.builtin.include_tasks:
+        file: install_compose.yml
