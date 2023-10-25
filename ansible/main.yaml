@@ -1,0 +1,5 @@
+---
+- name: VK Cloud python
+  import_playbook: "{{ playbook_dir }}/dev/python.yaml"
+- name: VK Cloud csharp
+  import_playbook: "{{ playbook_dir }}/dev/csharp.yaml"

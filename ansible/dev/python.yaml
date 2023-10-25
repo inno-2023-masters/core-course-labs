@@ -1,0 +1,9 @@
+---
+- name: Deploy python app to host
+  hosts: vk_cloud
+  become: true
+  roles:
+    - role: roles/web_app
+      image: dmitriypru/core_course_labs_python:latest
+      ports:
+        - "8000:8000"

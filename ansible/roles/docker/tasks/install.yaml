@@ -1,0 +1,29 @@
+---
+- name: Check to not have old deps
+  apt:
+    name:
+      - docker
+      - docker-engine
+      - docker.io
+      - docker-compose
+      - docker-doc
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+
+- name: Install docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+    state: present
+
+- name: Install pip packets
+  pip:
+    name:
+      - docker
+      - docker-compose
+    state: latest

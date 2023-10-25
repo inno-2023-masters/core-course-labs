@@ -1,3 +1,7 @@
+![Python CI](https://github.com/dmitriypru/core-course-labs/actions/workflows/python_workflow.yaml/badge.svg)
+![C# CI](https://github.com/dmitriypru/core-course-labs/actions/workflows/csharp_workflow.yaml/badge.svg)
+
+
 # DevOps Engineering Labs
 
 ## Introduction

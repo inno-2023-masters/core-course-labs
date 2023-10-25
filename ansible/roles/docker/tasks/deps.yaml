@@ -1,0 +1,11 @@
+---
+- name: Chekc to have needable deps.
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+      - curl
+      - python3
+      - python3-pip
+    state: present

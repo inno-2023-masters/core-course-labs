@@ -1,0 +1,9 @@
+---
+- name: Deploy C# app to host
+  hosts: vk_cloud
+  become: true
+  roles:
+    - role: roles/web_app
+      image: dmitriypru/core_course_labs_csharp:latest
+      ports:
+        - "80:80"

@@ -1,0 +1,4 @@
+---
+- include_tasks: "{{ role_path }}/tasks/deps.yaml"
+- include_tasks: "{{ role_path }}/tasks/repo.yaml"
+- include_tasks: "{{ role_path }}/tasks/install.yaml"

@@ -1,0 +1,10 @@
+[type_vkcs_compute_floatingip_associate]
+
+[vk_cloud:children]
+type_vkcs_compute_floatingip_associate
+
+[vk_cloud:vars]
+ansible_user=ubuntu
+
+[vk_cloud]
+ubuntu@87.239.106.11 ansible_ssh_private_key_file=~/.ssh/id_rsa
