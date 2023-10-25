@@ -1,0 +1,4 @@
+aws_hosts:
+  hosts:
+    aws01:
+      ansible_host: 18.212.49.89

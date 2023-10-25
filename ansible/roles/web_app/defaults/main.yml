@@ -1,0 +1,5 @@
+docker_image: justsomedude22/app_python:latest
+docker_container_name: time_python
+docker_port: 5000
+host_port: 5000
+web_app_full_wipe: true
