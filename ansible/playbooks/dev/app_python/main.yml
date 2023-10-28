@@ -1,0 +1,13 @@
+- name: app_python_lab6
+  hosts: ec2-34-216-21-217.us-west-2.compute.amazonaws.com
+  become: yes
+  remote_user: ubuntu
+  roles:
+    - role: 'roles/web_app'
+      tags: [web_app-python]
+      vars:
+        docker_container_name: app_python
+        docker_image_name: docker.io/rametago/my-first-repo:latest
+        web_app_path: /app_python
+        internal_port: 5000
+        external_port: 8080

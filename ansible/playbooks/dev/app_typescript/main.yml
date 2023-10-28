@@ -1,0 +1,13 @@
+- name: app_typescript_lab6
+  hosts: ec2-34-216-21-217.us-west-2.compute.amazonaws.com
+  become: yes
+  remote_user: ubuntu
+  roles:
+    - role: 'roles/web_app'
+      tags: [web_app-typescript]
+      vars:
+        docker_container_name: app_typescript
+        docker_image_name: docker.io/rametago/my-first-repo:svelte
+        web_app_path: /app_typescript
+        internal_port: 5173
+        external_port: 5173

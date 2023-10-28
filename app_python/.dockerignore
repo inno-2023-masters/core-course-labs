@@ -1,0 +1,6 @@
+.git
+.gitignore
+
+# Ignore Docker-specific files and directories
+Dockerfile
+docker-compose.yml

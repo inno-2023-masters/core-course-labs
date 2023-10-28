@@ -1,0 +1,21 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+/* Add some styling to the header */
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+
+}
+
+/* Style the time display */
+#moscow-time {
+  font-size: 36px;
+  font-weight: bold;
+}

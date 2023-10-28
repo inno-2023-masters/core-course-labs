@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+
+
+{% block content %}
+
+<div class="text-center">
+    <h1 class="mb-4">Current Time in Moscow</h1>
+    <p id="moscow-time"></p>
+</div>
+
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    async function updateTime() {
+        const response = await fetch('/get_time/');
+        const time = await response.text();
+        document.getElementById('moscow-time').textContent = time;
+    }
+
+    setInterval(updateTime, 1000); // Update every second
+    updateTime(); // Initial update
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+version: "3"
+
+networks:
+  loki:
+
+services:
+  python_app:
+    image: rametago/my-first-repo:latest
+    container_name: python_app
+    ports:
+      - "8000:8000"
+    logging: &logger
+      driver: "json-file"
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: curl -f http://localhost:8000 || exit 1
+
+  typescript_app:
+    image: rametago/my-first-repo:svelte
+    container_name: typescript_app
+    ports:
+      - "5173:5173"
+    logging:
+      <<: *logger
+    healthcheck:
+      test: curl -f http://localhost:5173 || exit 1
+
+  loki:
+    image: grafana/loki:2.9.1
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+    logging:
+      <<: *logger
+
+  promtail:
+    image: grafana/promtail:2.9.1
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - ./config/promtail:/etc/promtail/config
+    command: -config.file=/etc/promtail/config/promtail.yaml
+    networks:
+      - loki
+    logging:
+      <<: *logger
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana:/etc/grafana/provisioning/datasources
+    networks:
+      - loki
+    logging:
+      <<: *logger
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-admin-api'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.retention.time=7d'
+    ports:
+      - "9090:9090"
+    networks:
+      - loki
+    logging:
+      <<: *logger

@@ -1,0 +1,55 @@
+name: app_typescript
+
+on:
+  push:
+    paths:
+      - "app_typescript/**"
+      - ".github/workflows/app_typescript-ci.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Set Up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Cache Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('app_typescript/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
+
+    - name: Install Dependencies
+      run: cd app_typescript && npm install
+
+    - name: Build Svelte Kit Project
+      run: cd app_typescript && npm run build
+
+    - name: Install Snyk CLI
+      run: npm install -g snyk
+
+    - name: Run Snyk to check for vulnerabilities
+      run: snyk test --file=app_typescript/package.json
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    - name: Docker Login
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        cd app_typescript
+        docker build -t my-svelte-app .
+        docker tag my-svelte-app:latest rametago/my-first-repo:svelte
+        docker push rametago/my-first-repo:svelte

@@ -1,0 +1,8 @@
+- name: Web App role
+  tags: [webapp]
+  become: true
+  block:
+    - name: Import wiper.yml
+      ansible.builtin.import_tasks: wiper.yml
+    - name: Import installer.yml
+      ansible.builtin.import_tasks: installer.yml

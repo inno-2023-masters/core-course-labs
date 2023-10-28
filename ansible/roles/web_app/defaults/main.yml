@@ -1,0 +1,7 @@
+docker_container_name: "web_app"
+docker_image_name: busybox
+web_app_full_wipe: false
+web_app_full_install: true
+web_app_path: /app
+internal_port: 80
+external_port: 8080
