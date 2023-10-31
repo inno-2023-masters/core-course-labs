@@ -1,0 +1,14 @@
+#!/bin/sh
+
+APP_PATH=app_python
+
+#set -x
+
+autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place $APP_PATH/src $APP_PATH/tests --exclude=__init__.py
+isort $APP_PATH/src $APP_PATH/tests --profile black
+black $APP_PATH/src $APP_PATH/tests
+python3 -m mdformat $APP_PATH
+python3 -m pymarkdown scan $APP_PATH
+
+python3 -m mdformat app_js/*.md
+python3 -m pymarkdown scan app_js/*.md

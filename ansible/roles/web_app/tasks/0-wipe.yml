@@ -1,0 +1,8 @@
+- name: Remove Docker containers
+  shell: docker compose -f /home/ubuntu/docker-compose.yml down
+  ignore_errors: true
+
+- name: Remove related files
+  file:
+    path: /home/ubuntu/docker-compose.yml
+    state: absent

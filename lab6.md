@@ -81,6 +81,11 @@ In this lab, you will utilize Ansible to set up a Continuous Deployment (CD) pro
                    `-- main.yaml
    ```
 
+2. Application Improvements:
+
+   - Enhance your application by integrating relevant metrics.
+   - Strengthen your application's reliability by implementing a healthcheck mechanism.
+
 **Guidelines:**
 
 - Use proper Markdown formatting and structure for documentation files.

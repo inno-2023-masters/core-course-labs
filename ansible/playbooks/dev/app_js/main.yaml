@@ -1,0 +1,9 @@
+- hosts: all
+  become: true
+  roles:
+    - docker
+    - role: web_app
+      vars:
+        docker_image: kernie/joke-js:latest
+        docker_container_name: joke_js
+        docker_port: 3000

@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Kernie
+  description: Ansible role to deploy a Dockerized web app
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
+        - xenial
+
+  dependencies: [docker]
+
+  min_ansible_version: 2.4

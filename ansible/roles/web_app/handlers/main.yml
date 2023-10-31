@@ -1,0 +1,4 @@
+- name: Start web app container
+  command:
+    cmd: docker compose -f /home/ubuntu/docker-compose.yml up -d
+    chdir: /home/ubuntu/

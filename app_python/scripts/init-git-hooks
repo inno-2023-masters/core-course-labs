@@ -1,0 +1,7 @@
+#!/bin/sh
+set -x
+
+PRE_COMMIT_PATH=../../.git/hooks/pre-commit
+
+cp pre-commit $PRE_COMMIT_PATH
+chmod +x $PRE_COMMIT_PATH
