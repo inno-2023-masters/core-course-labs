@@ -1,0 +1,9 @@
+.dockerignore
+README*
+Dockerfile
+DOCKER*
+.git*
+.env*
+.docker*
+PYTHON*
+photo-proof*

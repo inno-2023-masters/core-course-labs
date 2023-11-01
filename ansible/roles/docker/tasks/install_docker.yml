@@ -1,0 +1,21 @@
+---
+ - name: Install packages required by docker
+   apt:
+     name: "{{ docker_dependencies }}"
+     update_cache: yes
+
+ - name: Add docker GPG key
+   apt_key:
+     url: "{{ docker_gpg_key }}"
+
+ - name: Add docker apt repo
+   apt_repository:
+     repo: " {{ docker_repo }}"
+
+ - name: Install docker
+   apt:
+     update_cache: yes
+     state: "{{ docker_packages_state }}"
+     name: "{{ docker_packages }}"
+   notify: Restart docker
+  

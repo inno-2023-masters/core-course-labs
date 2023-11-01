@@ -1,0 +1,28 @@
+---
+# Docker install params
+docker_edition: 'ce'
+
+docker_dependencies:
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "curl"
+  - "software-properties-common"
+
+docker_gpg_key: 'https://download.docker.com/linux/ubuntu/gpg'
+docker_repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
+
+docker_packages_state: present
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "containerd.io"
+
+# Pip install params
+pip_package: python3-pip
+pip_state: present
+
+# Docker Compose install params
+docker_compose_version: "v2.11.1"
+docker_compose_arch: "{{ ansible_architecture }}"
+docker_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ docker_compose_arch }}"
+docker_compose_mode: 0754
+docker_restart_handler_state: restarted
