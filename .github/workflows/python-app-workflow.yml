@@ -1,0 +1,121 @@
+name: Python App
+
+run-name: Python app build, lint, and test
+
+on: 
+  push:
+    paths: 
+      - '.github/workflows/python-app-workflow.yml'
+      - 'app_python/**'
+      - '!**.md'
+  pull_request:
+    paths: 
+      - '.github/workflows/python-app-workflow.yml'
+      - 'app_python/**'
+      - '!**.md'
+
+jobs: 
+  python-build-lint-test: 
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: app_python
+    
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.10", "3.9", "3.8"]
+    
+    steps:
+      - name: Checkout contents
+        uses: actions/checkout@v3
+      
+      - name: Setup python 
+        uses: actions/setup-python@v4
+        with: 
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+              
+      - name: Create virtual-env
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Linting via pylint
+        run: | 
+          pylint --recursive=y --ignore='venv' .
+
+      - name: Testing via pytest
+        run: | 
+          pytest
+  
+  snyk-check:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: app_python
+    
+    needs: python-build-lint-test
+    steps: 
+      - name: Checkout contents
+        uses: actions/checkout@v3
+      
+      - name: Snyk
+        uses: snyk/actions/setup@master
+        
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+              
+      - name: Create virtual-env
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Snyk check
+        run: | 
+          snyk test
+        env: 
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  docker-login-build-push:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: app_python
+        
+    needs: snyk-check
+    
+    steps:
+      - name: Login
+        uses: docker/login-action@v3.0.0
+        with: 
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build-Push
+        uses: docker/build-push-action@v5
+        with: 
+          context: "{{defaultContext}}:app_python"
+          push: true
+          tags: iviosab/moscow_time

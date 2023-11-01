@@ -1,0 +1,46 @@
+---
+version: "3.6"
+
+networks:
+  loki:
+
+services:
+  app:
+    image: iviosab/moscow_time
+    ports:
+      - "5000:5000"
+    networks:
+      - loki
+
+  app2:
+    image: iviosab/moscow_time_go
+    ports:
+      - "8080:8080"
+    networks:
+      - loki
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config:/mnt/config
+    command: -config.file=/mnt/config/loki-config.yaml
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:2.5.0
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - ./config:/mnt/config
+    command: -config.file=/mnt/config/promtail-config.yaml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - loki

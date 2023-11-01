@@ -1,0 +1,7 @@
+**/.pytest_cache
+.gitignore
+.venv
+**/__pycache__
+Dockerfile
+.dockerignore
+*.md

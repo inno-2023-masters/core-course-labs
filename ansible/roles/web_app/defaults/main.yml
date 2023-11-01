@@ -1,0 +1,4 @@
+container_name: "moscow_time"
+image: "iviosab/moscow_time"
+app_name: "app"
+web_app_full_wipe: true

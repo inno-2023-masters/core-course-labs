@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Moscow Time</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+</head>
+
+<body>
+    <div>
+        <header>
+            <a href="/">
+                <h1>Current MSK Time</h1>
+            </a>
+        </header>
+        <div class="">
+            <h1 id="time"></h1>
+        </div>
+    </div>
+</body>
+
+<script>
+    let time = document.getElementById("time");
+    let formatter = new Intl.DateTimeFormat("ru", {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        timeZone: "Europe/Moscow",
+    });
+
+    function updateTime() {
+        time.textContent = formatter.format(new Date());
+    }
+
+    setInterval(updateTime, 1000);
+</script>
+
+</html>

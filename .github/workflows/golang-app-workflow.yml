@@ -1,0 +1,109 @@
+name: Go App
+
+run-name: Go app build, lint, and test
+
+on: 
+  push:
+    paths: 
+      - '.github/workflows/golang-app-workflow.yml'
+      - 'app_golang/**'
+      - '!**.md'
+  pull_request:
+    paths: 
+      - '.github/workflows/golang-app-workflow.yml'
+      - 'app_python/**'
+      - '!**.md'
+
+jobs: 
+  golang-build-test: 
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: app_golang
+    
+    strategy:
+      matrix:
+        golang-version: ["1.21", "1.20", "1.19", "1.18"]
+    
+    steps:
+      - name: Checkout contents
+        uses: actions/checkout@v3
+      
+      - name: Setup Go 
+        uses: actions/setup-go@v4
+        with: 
+          go-version: ${{ matrix.golang-version }}
+      
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+              
+      - name: Build
+        run: |
+          go build -v -o ./bin/moscowtime .
+      
+      - name: Test
+        run: | 
+          go test
+  
+  snyk-check:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: app_golang
+    
+    needs: golang-build-test
+    steps: 
+      - name: Checkout contents
+        uses: actions/checkout@v3
+      
+      - name: Snyk
+        uses: snyk/actions/setup@master
+        
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+              
+      - name: Build
+        run: |
+          go build -v -o ./bin/moscowtime .
+
+      - name: Snyk check
+        run: | 
+          snyk test
+        env: 
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  docker-login-build-push:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: app_golang
+        
+    needs: snyk-check
+    
+    steps:
+      - name: Login
+        uses: docker/login-action@v3.0.0
+        with: 
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build-Push
+        uses: docker/build-push-action@v5
+        with: 
+          context: "{{defaultContext}}:app_golang"
+          push: true
+          tags: iviosab/moscow_time_go
