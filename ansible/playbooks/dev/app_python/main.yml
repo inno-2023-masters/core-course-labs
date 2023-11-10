@@ -1,0 +1,15 @@
+- name: web_app_python
+  hosts: ec2-52-40-36-253.us-west-2.compute.amazonaws.com
+  become: yes
+  remote_user: ubuntu
+  roles:
+    - role: 'roles/web_app'
+      tags: [python_web_app]
+      vars:
+        docker_container: app_python
+        docker_image: docker.io/nikolina2k/ma-repo:latest
+        web_app_path: /app_python
+        internal_port: 3000
+        external_port: 5000
+        web_app_full_wipe: true
+        web_app_full_install: true

@@ -1,0 +1,4 @@
+[submodule "app_typescript/cat-pics"]
+	path = app_typescript/cat-pics
+	url = git@github.com:nikolina2k/cat-pics.git
+	branch = lab3

@@ -1,0 +1,10 @@
+- name: Restart Docker Compose
+  become: true
+  listen: web_app_docker_restart
+  community.docker.docker_compose:
+    project_src: "{{ web_app_path }}"
+    build: true
+    recreate: smart
+    restarted: true
+    remove_orphans: true
+    state: present
