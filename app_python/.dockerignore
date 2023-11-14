@@ -1,0 +1,8 @@
+# Ignore unnecessary files and derictories
+.git
+.ruff_cache
+venv
+*.md
+*.pyc
+*.log
+__pycache__

@@ -1,0 +1,14 @@
+- name: Docker-role
+  tags: [docker]
+  block:
+    - name: Install pip
+      ansible.builtin.include_tasks:
+        file: pip.yml
+
+    - name: Install docker
+      ansible.builtin.include_tasks:
+        file: docker.yml
+
+    - name: Install docker-compose
+      ansible.builtin.include_tasks:
+        file: docker-compose.yml

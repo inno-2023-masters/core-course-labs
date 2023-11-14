@@ -1,5 +1,9 @@
 # DevOps Engineering Labs
 
+![python package](https://github.com/quiner1793/dev-ops-course-labs/workflows/Python%20package/badge.svg)
+
+![go package](https://github.com/quiner1793/dev-ops-course-labs/workflows/Go%20package/badge.svg)
+
 ## Introduction
 
 Welcome to the DevOps Engineering course labs! These hands-on labs are designed to guide you through various aspects of DevOps practices and principles. As you progress through the labs, you'll gain practical experience in application development, containerization, testing, infrastructure setup, CI/CD processes, and more.
