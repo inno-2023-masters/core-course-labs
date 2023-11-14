@@ -1,0 +1,12 @@
+<<<<<<< HEAD
+
+
+=======
+docker_container_name: "web_app"
+docker_image_name: web
+web_app_full_wipe: false
+web_app_full_install: true
+web_app_path: /app
+internal_port: 5000
+external_port: 8080
+>>>>>>> a07a07cc65f8788ce67ed0ef0cab956b7e09b661

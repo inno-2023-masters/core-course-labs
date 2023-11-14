@@ -1,0 +1,8 @@
+# Default Docker installation method (e.g., 'package', 'script', etc.)
+docker_install_method: package
+
+# Default Docker Compose installation method
+docker_compose_install: true
+
+# Default Docker version to install (optional)
+docker_version: "latest"

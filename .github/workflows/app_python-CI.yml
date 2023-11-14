@@ -1,0 +1,61 @@
+name: app_python
+
+on:
+  push:
+    paths:
+      - "app_python/**"
+      - ".github/workflows/app_python-CI.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set Up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('app_python/**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Dependencies
+        run: pip install -r app_python/requirements.txt
+
+      - name: Formatting Code
+        run: pre-commit run --all-files
+        continue-on-error: true
+
+      - name: Lint Code
+        run: pre-commit run --all-files
+
+      - name: Run Tests
+        run: python app_python/test_app.py
+
+      - name: Install dependencies
+        run: npm install -g snyk
+
+      - name: Run Snyk to check for vulnerabilities
+        run: snyk test --file=app_python/requirements.txt
+        env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Login to Docker Hub
+        env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u $DOCKER_USERNAME -p "${DOCKER_PASSWORD}"
+
+      - name: Build Docker image
+        run: docker build -t rinnatova/docker_lab:latest .
+
+      - name: Push Docker image
+        run: docker push rinnatova/docker_lab:latest

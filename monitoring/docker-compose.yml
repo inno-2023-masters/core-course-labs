@@ -1,0 +1,63 @@
+services:
+  app_python:
+    image: rinnatova/docker_lab:latest
+    ports: [8000:3000]
+    networks:
+      - monitoring.network
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}"
+        max-size: "100m"
+        max-file: 3
+
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: [3000:3000]
+    networks:
+      - monitoring.network
+
+  promtail:
+    image: grafana/promtail:latest
+    ports: [9080:9080]
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail.config.yaml:/etc/promtail/promtail.config.yaml
+    command: "-config.file=/etc/promtail/promtail.config.yaml"
+    networks:
+      - monitoring.network
+
+  loki:
+    image: grafana/loki:latest
+    ports: [3100:3100]
+    volumes:
+      - ./loki.config.yaml:/etc/loki.config.yaml
+    command: -config.file=/etc/loki.config.yaml
+    networks:
+      - monitoring.network
+    
+  prometheus:
+    image: prom/prometheus:latest
+    ports: [9090:9090]
+    volumes:
+      - ./prometheus.config.yaml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - monitoring.network
+    logging:
+        driver: json-file
+        options:
+          tag: '{{.ImageName}}|{{.Name}}'
+          max-size: "100m"
+          max-file: 3
+    deploy:
+      resources:
+        limits:
+          memory: 999M
+
+networks:
+  monitoring.network:
+    ipam:
+      driver: default

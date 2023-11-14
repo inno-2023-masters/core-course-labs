@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: post-install-hook
+spec:
+  containers:
+  - name: hook-container
+    image: busybox
+    args:
+    - sleep
+    - "20"
+  # Adding success policy to remove the hook pod
+  terminationGracePeriodSeconds: 0

@@ -1,0 +1,21 @@
+- ---
+- name: Install Docker
+  become: yes  # Use 'become' to run tasks as root (sudo)
+  apt:
+    name: docker.io  # On Ubuntu, install Docker using 'docker.io' package
+    state: present  # Ensure that Docker is installed
+  when: ansible_os_family == "Debian"  # Check the OS family (Debian/Ubuntu)
+
+- name: Install Docker
+  become: yes
+  yum:
+    name: docker  # On CentOS, install Docker using 'docker' package
+    state: present
+  when: ansible_os_family == "RedHat"  # Check the OS family (RedHat/CentOS)
+
+- name: Start Docker service
+  become: yes
+  service:
+    name: docker
+    state: started
+    enabled: yes  # Start Docker at boot

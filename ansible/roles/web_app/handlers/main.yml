@@ -1,0 +1,7 @@
+<<<<<<< HEAD
+=======
+- name: Restart Web Application
+      docker_container:
+        name: web_app_container
+        state: restarted
+>>>>>>> a07a07cc65f8788ce67ed0ef0cab956b7e09b661

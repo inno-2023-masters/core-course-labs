@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  '{{ docker_container_name }}':
+    image: '{{ docker_image_name }}'
+    container_name: '{{ docker_container_name }}'
+    restart: always
+    ports:
+      - '{{ internal_port }}:{{ external_port }}'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --no-verbose --tries=1 -O /dev/null http://localhost:{{ external_port }}/healthcheck || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
