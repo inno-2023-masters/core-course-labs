@@ -1,0 +1,6 @@
+---
+- name: Install docker
+  hosts: vk_cloud
+  become: true
+  roles:
+    - docker

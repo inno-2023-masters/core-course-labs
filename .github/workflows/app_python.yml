@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - 'app_python/**'
+      - '.github/workflows/app_python.yml'
+
+permissions:
+    security-events: write
+
+defaults:
+  run:
+    working-directory: ./app_python
+
+jobs:
+  pre-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --with=test
+      - name: Vulnerability check
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: 
+            --sarif-file-output=python_snyk.sarif
+            --all-projects
+            --skip-unresolved
+      - name: Vulnerability report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: python_snyk.sarif
+      - name: Run tests
+        run: poetry run pytest
+
+  build:
+    needs: pre-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Dockerhub login
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build and push the image
+        run: |
+          docker build -f Dockerfile -t run4w4y/devops-course-python-app:latest .
+          docker push run4w4y/devops-course-python-app:latest
+

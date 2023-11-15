@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "devops-lab-1"
+version = "0.0.1"
+description = ""
+authors = ["run4w4y <add4che@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.90.0"
+uvicorn = "^0.20.0"
+pytz = "^2023.3.post1"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.0"
+freezegun = "^1.2.2"
+httpx = "^0.24.1"
+pycodestyle = "^2.11.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

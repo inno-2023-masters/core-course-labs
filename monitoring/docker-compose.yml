@@ -1,0 +1,86 @@
+version: "3"
+
+networks:
+  default:
+
+x-logger: &logger
+  driver: "json-file"
+  options:
+    max-size: "15m"
+    max-file: "3"
+    tag: "{{.ImageName}}|{{.Name}}"
+
+services:
+  app_python:
+    image: run4w4y/devops-course-python-app:latest
+    ports:
+      - "8000:8000"
+    logging: &logger
+      driver: "json-file"
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+  
+  loki:
+    image: grafana/loki:2.9.0
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - default
+    logging:
+      <<: *logger
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - ./promtail-conf.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - default
+    logging:
+      <<: *logger
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  grafana:
+    volumes:
+      - ./grafana-provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - default
+    logging:
+      <<: *logger
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus-conf.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - default
+    logging:
+      <<: *logger
+    deploy:
+      resources:
+        limits:
+          memory: 512M
