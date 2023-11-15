@@ -1,0 +1,8 @@
+services:
+  web_app:
+    hostname: web_app
+    image: {{ web_app_image }}
+    restart: always
+    ports:
+      - "80:{{ web_app_port }}"
+    command: "{{ web_app_command }}"

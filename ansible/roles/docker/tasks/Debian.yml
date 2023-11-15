@@ -1,0 +1,10 @@
+---
+- name: Install deps
+  apt:
+    name:
+      - python3-pip
+
+- name: Install Docker 
+  apt:
+    name: docker.io
+    state: present

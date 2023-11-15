@@ -1,0 +1,9 @@
+#!/usr/bin/env -S ANSIBLE_ROLES_PATH=roles ansible-playbook
+---
+- hosts: all
+  become: true
+  serial: 1
+  force_handlers: true
+  roles:
+    - role: web_app
+      tags: web_app

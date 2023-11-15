@@ -1,0 +1,15 @@
+---
+- name: Stop appliation
+  docker_compose:
+    project_src: "{{ web_app_path }}"
+    state: absent
+
+- name: Delete image from docker
+  docker_image:
+    name: "{{ web_app_image }}"
+    state: absent
+
+- name: Remove compose directory
+  ansible.builtin.file:
+    path: "{{ web_app_path }}"
+    state: absent

@@ -1,0 +1,17 @@
+---
+- name: Install Docker
+  include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Install Docker Compose
+  pip:
+    name: 
+      - docker-compose
+      - docker
+    state: latest
+
+- name: Check if docker service is running
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+    daemon_reload: yes

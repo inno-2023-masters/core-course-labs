@@ -1,0 +1,18 @@
+---
+- name: Create app path
+  file:
+    path: "{{ web_app_path }}"
+    state: directory
+    mode: 0755
+
+- name: Render compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ web_app_path }}/docker-compose.yml"
+
+- name: Run docker-compose
+  docker_compose:
+    project_src: "{{ web_app_path }}"
+    state: present
+    pull: yes
+    restarted: yes

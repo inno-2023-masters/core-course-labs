@@ -1,0 +1,5 @@
+---
+web_app_path: /opt/web_app
+web_app_image: docker.io/platun0v/devops-lab2:latest
+web_app_port: 8000
+web_app_command: gunicorn app.main:app -b 0.0.0.0:{{ web_app_port }}

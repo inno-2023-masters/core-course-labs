@@ -1,0 +1,97 @@
+name: Python-app
+
+on:
+  push:
+    paths:
+      - '.github/workflows/python-app.yaml'
+      - 'app_python/**'
+      - '!app_python/**.md'
+
+defaults:
+  run:
+    shell: bash
+    working-directory: app_python
+
+jobs:
+  checks:
+    runs-on: ubuntu-22.04
+    env:
+      POETRY_VERSION: 1.5.1
+      POETRY_HOME: "/opt/poetry"
+      POETRY_VIRTUALENVS_IN_PROJECT: true
+      POETRY_NO_INTERACTION: 1
+      PYSETUP_PATH: "/opt/pysetup"
+      VENV_PATH: "/opt/pysetup/.venv"
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - uses: actions/cache@v3
+        id: cache-poetry
+        with:
+          path: ${{ env.POETRY_HOME }}
+          key: ${{ runner.os }}-poetry-${{ env.POETRY_VERSION }}
+
+      - name: Install Poetry
+        if: steps.cache-poetry.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+      
+      - name: Update path
+        run: |
+          echo "${{ env.POETRY_HOME }}/bin" >> $GITHUB_PATH
+
+      - uses: actions/cache@v3
+        id: cache-venv
+        with:
+          path: ./app_python/.venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          poetry install
+        
+      - name: Lint
+        run: |
+          poetry run ruff app
+
+      - name: Unit tests
+        run:
+          poetry run pytest
+
+      - uses: snyk/actions/setup@master
+      - name: Snyk test for vulnerabilities
+        continue-on-error: true
+        run: | 
+          snyk test --sarif-file-output=snyk.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  build_deploy:
+    needs: checks
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: app_python
+          file: app_python/docker/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-lab2:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/devops-lab2:latest-buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/devops-lab2:latest-buildcache,mode=max
