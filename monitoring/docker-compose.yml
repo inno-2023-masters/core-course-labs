@@ -1,0 +1,135 @@
+version: "3"
+
+x-logging: &logging
+  driver: json-file
+  options:
+    tag: "{{.ImageName}}|{{.Name}}"
+    max-size: 10m
+    max-file: 3
+
+
+x-healthcheck: &healthcheck-params
+  interval: 15s
+  timeout: 10s
+  retries: 5
+  start_period: 5s
+
+
+networks:
+  loki:
+
+services:
+  app_python:
+    container_name: app_python
+    image: lizavetta/devops-python:latest
+    ports:
+      - "8082:80"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8082/health" ]
+      <<: *healthcheck-params
+    logging: *logging
+    networks:
+      - loki
+
+
+  app_javascript:
+    container_name: app_javascript
+    image: lizavetta/devops-svelte:latest
+    ports:
+      - "8081:80"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:80/health" ]
+      <<: *healthcheck-params
+    logging: *logging
+    networks:
+      - loki
+
+
+  loki:
+    container_name: loki
+    image: grafana/loki:2.9.1
+    ports:
+      - "3100:3100"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    command: -config.file=/etc/loki/local-config.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --tries=1 --spider http://localhost:3100/ready || exit 1" ]
+      <<: *healthcheck-params
+    logging: *logging
+    networks:
+      - loki
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:2.9.1
+    ports:
+      - "9080:9080"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ${PWD}/promtail/config.yml:/etc/promtail/config.yml:ro
+#      - /Users/elizaveta/Desktop/devops/monitoring/promtail/promtail.yml:/etc/promtail/promtail.yml
+
+    command: -config.file=/etc/promtail/config.yml
+    logging: *logging
+    networks:
+      - loki
+
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command: '--config.file=/etc/prometheus/config.yml'
+    ports:
+      - "9090:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --tries=1 --spider http://localhost:9090/status || exit 1" ]
+      <<: *healthcheck-params
+    logging: *logging
+    networks:
+      - loki
+
+
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - /run.sh
+    volumes:
+      #        - ./grafana:/etc/grafana/provisioning
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
+      <<: *healthcheck-params
+    logging: *logging
+    networks:
+      - loki

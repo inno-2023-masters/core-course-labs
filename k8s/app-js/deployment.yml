@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: svelte-deploy
+  labels:
+    app: app-js
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app-js
+  template:
+    metadata:
+      labels:
+        app: app-js
+    spec:
+      containers:
+      - name: app-js
+        image: lizavetta/devops-svelte:latest
+        ports:
+        - containerPort: 8081

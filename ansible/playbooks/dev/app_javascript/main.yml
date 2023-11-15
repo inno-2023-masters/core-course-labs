@@ -1,0 +1,13 @@
+- name: deploy js in Docker
+  gather_facts: no
+  hosts: all
+  connection: local
+  become: true
+  roles:
+    - name: web_app
+      vars:
+        docker_container: 'devops-new'
+        docker_image: 'lizavetta/devops-svelte:latest'
+        internal_port: 80
+        external_port: 80
+        app_name: 'app_javascript'

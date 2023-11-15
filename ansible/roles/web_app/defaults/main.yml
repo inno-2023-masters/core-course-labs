@@ -1,0 +1,7 @@
+---
+docker_image_version: latest
+docker_image: lizavetta/devops-python:{{app_docker_image_version}}
+docker_container: app_python
+dir_name: 'new-dir'
+
+web_app_full_wipe: false

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-deployment
+  labels:
+    app: app-py
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app-py
+  template:
+    metadata:
+      labels:
+        app: app-py
+    spec:
+      containers:
+      - name: app-py
+        image: lizavetta/devops-python:latest
+        ports:
+        - containerPort: 8082

@@ -1,0 +1,10 @@
+---
+- name: Run the app
+  import_tasks: run.yml
+  tags:
+    - run_app
+
+- name: Wipe the app
+  import_tasks: wipe.yml
+  tags:
+    - wipe_app

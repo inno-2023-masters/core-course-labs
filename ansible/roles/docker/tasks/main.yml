@@ -1,0 +1,23 @@
+- name: docker role
+  tags: [docker]
+  block:
+    - name: Install pip
+      ansible.builtin.package:
+        name: python3-pip
+        state: present
+
+#    - name: Install docker package using pip
+#      ansible.builtin.import_role:
+#        name: geerlingguy.pip
+#      vars:
+#        pip_install_packages:
+#          - name: docker
+#          - name: docker-compose
+
+    - name: Include install_docker
+      ansible.builtin.include_tasks:
+        file: install_docker.yml
+
+    - name: Include install_compose
+      ansible.builtin.include_tasks:
+        file: install_compose.yml

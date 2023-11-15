@@ -1,0 +1,3 @@
+- name: install docker-compose
+  ansible.builtin.pip:
+    name: docker-compose

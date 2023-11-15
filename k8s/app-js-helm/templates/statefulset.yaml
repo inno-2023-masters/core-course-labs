@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "app-js-helm.fullname" . }}-statefulset
+spec:
+  selector:
+    matchlabels:
+      name: {{ include "app-js-helm.fullname" . }}-statefulset
+  servicename: {{ include "app-js-helm.fullname" . }}-statefulset
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: {{ include "app-js-helm.fullname" . }}-statefulset
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: {{ include "app-js-helm.fullname" . }}-statefulset
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
