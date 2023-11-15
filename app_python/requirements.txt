@@ -1,0 +1,6 @@
+flask
+pytest
+pre-commit
+PyYAML
+pytz
+flake8

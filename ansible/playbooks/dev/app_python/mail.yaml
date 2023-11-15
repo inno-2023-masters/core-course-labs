@@ -1,0 +1,13 @@
+- name: Docker python app deployment using the Ansible role
+  hosts: all
+  become: true
+  roles:
+    - name: web_app
+      tags: [python_web_app]
+      vars:
+        app_name: "app_python"
+        docker_container: "devops-python-app"
+        docker_image: "vladimirzelenokor/devops-python-app"
+        docker_image_tag: "latest"
+        internal_port: 5000
+        external_port: 8000

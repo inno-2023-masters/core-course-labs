@@ -1,0 +1,5 @@
+- name: Docker deployment using the Ansible role
+  hosts: all
+  become: true
+  roles:
+    - docker

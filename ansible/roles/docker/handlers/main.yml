@@ -1,0 +1,5 @@
+- name: Docker initialization 
+  service:
+    name: docker
+    state: restarted
+    enabled: yes

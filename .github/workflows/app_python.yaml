@@ -1,0 +1,39 @@
+name: app_python
+
+on:
+  push:
+    paths:
+      - "app_python/**"
+      - ".github/workflows/app_python.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check the code
+        uses: actions/checkout@v3
+
+      - name: Set the python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.x
+
+      - name: Check and install requirements
+        run: pip install -r app_python/requirements.txt
+
+      - name: Check unit tests
+        run: python app_python/test.py
+
+      - name: Sign in to docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push docker image to dockerhub
+        run: |
+          cd app_python
+          docker build -t vladimirzelenokor/devops-lab2 .
+          docker tag vladimirzelenokor/devops-lab2:latest vladimirzelenokor/devops-lab2:latest
+          docker push vladimirzelenokor/devops-lab2:latest

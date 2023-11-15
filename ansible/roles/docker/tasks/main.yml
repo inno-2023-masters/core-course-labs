@@ -1,0 +1,9 @@
+# Running tasks one by one
+- name: Custom Docker Role
+  block:
+    - name: Pip
+      import_tasks: pip_task.yml
+    - name: Docker
+      import_tasks: docker_task.yml
+    - name: Compose
+      import_tasks: compose_task.yml

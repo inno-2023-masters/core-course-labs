@@ -1,0 +1,24 @@
+- name: Wipe task
+  when: web_app_full_wipe
+  block:
+    - name: Docker-compose check
+      stat:
+        path: "{{ docker_compose_file }}"
+      register: docker_compose
+
+    - name: Directory check
+      stat:
+        path: "{{ app_path }}"
+      register: web_app_directory
+
+    - name: Containers remove
+      when: docker_compose.stat.exists == true
+      command: "docker-compose -p {{ app_name }} down --remove-orphans"
+      args:
+        chdir: "{{ app_path }}"
+
+    - name: Directory delete
+      when: web_app_directory.stat.exists == true
+      file:
+        path: '{{ app_path }}'
+        state: absent

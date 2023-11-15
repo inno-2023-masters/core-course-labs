@@ -1,0 +1,5 @@
+- name: Docker-Compose run
+  listen: docker_compose_handler
+  command: "docker-compose -p {{ app_name }} up -d"
+  args:
+    chdir: "{{ app_path }}"

@@ -1,0 +1,11 @@
+- name: Web Role
+  tags: web_role
+  block:
+
+    - name: Wipe task
+      tags: wipe_task
+      import_tasks: wipe_task.yml
+
+    - name: Deploy task
+      tags: deploy_task
+      import_tasks: deploy_task.yml

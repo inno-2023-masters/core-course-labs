@@ -1,0 +1,25 @@
+---
+docker_edition: 'ce'
+
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "docker-{{ docker_edition }}-rootless-extras"
+  - "containerd.io"
+
+docker_dependencies:
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "curl"
+  - "software-properties-common"
+
+docker_apt_key: 'https://download.docker.com/linux/ubuntu/gpg'
+docker_repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
+
+docker_packages_state: present
+
+docker_compose_version: "v2.11.1"
+docker_compose_arch: "{{ ansible_architecture }}"
+docker_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ docker_compose_arch }}"
+docker_compose_path: '/usr/local/bin/docker-compose'
+docker_compose_mode: 0755
