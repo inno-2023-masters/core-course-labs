@@ -1,0 +1,6 @@
+vms:
+  hosts:
+    virtual_machine_1:
+      ansible_host: 192.168.31.186
+  vars:
+    ansible_user: parallels

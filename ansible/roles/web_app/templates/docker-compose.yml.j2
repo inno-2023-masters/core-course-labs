@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+    web_app:
+        container_name: {{ docker_container_name }}
+        image: {{ image_name }}
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - 'visit_volume':/app/visit_volume
+        

@@ -1,0 +1,35 @@
+- name: Docker packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  vars:
+    packages:
+      - apt-transport-https
+      - software-properties-common
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+- name: Docker GPG key
+  apt_key:
+    url: "{{ docker_apt_gpg_key }}"
+    state: present
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Doceker repository
+  apt_repository:
+    repo: "{{ docker_apt_repository }}"
+    state: present
+    filename: docker
+    update_cache: true
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Docker python module
+  pip:
+    name: docker
+    state: present
+  become: true

@@ -1,0 +1,21 @@
+---
+# Service options.
+docker_service_manage: true
+docker_service_state: started
+docker_service_enabled: true
+docker_restart_handler_state: restarted
+
+update_pip: true
+ansible_os_family: "Debian"
+
+# Docker Compose options.
+docker_install_compose: true
+docker_compose_version: "1.25.5"
+
+# Docker package options.
+docker_repo_url: https://download.docker.com/linux
+
+distro: ubuntu
+docker_apt_repository: "deb [arch={{ ansible_architecture }}] {{ docker_repo_url }}/{{ distro }} focal stable"
+docker_apt_ignore_key_error: true
+docker_apt_gpg_key: "{{ docker_repo_url }}/{{ distro }}/gpg"

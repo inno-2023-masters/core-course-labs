@@ -1,0 +1,6 @@
+- name: Prepare docker
+  hosts: vms
+  become_method: sudo
+  become: yes
+  roles:
+    - geerlingguy.docker

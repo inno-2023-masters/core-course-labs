@@ -1,0 +1,7 @@
+---
+- name : Deploy web app
+  hosts: vms
+  become: yes
+  become_method: sudo
+  roles:
+    - web_app

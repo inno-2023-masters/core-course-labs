@@ -1,0 +1,32 @@
+---
+- name: Deploy web_app image via Docker
+  become: true
+  tags: docker
+  block:
+    - name: Pull image
+      tags: pull
+      community.docker.docker_image:
+        name: "{{ docker_full_image_name }}"
+        source: pull
+      
+    - name: Deploy container
+      tags: run
+      community.docker.docker_container:
+        name: "{{ image_name }}"
+        image: "{{ docker_full_image_name }}"
+        state: started
+        published_ports:
+          - "{{ exposed_port }}:80"
+  when: web_app_full_wipe | bool
+
+- name: Add docker-compose
+  tags: docker-compose
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: docker-compose.yml
+    mode: 0644
+
+- name: Remove all containers and images
+  tags: wipe
+  ansible.builtin.import_tasks: wipe.yml
+  when: web_app_full_wipe | bool

@@ -1,0 +1,10 @@
+---
+docker_user: max3k
+image_name: web_app
+image_version_tag: latest
+
+docker_container_name: "{{ image_name }}"
+
+docker_full_image_name: "{{ docker_user }}/{{ image_name }}:{{ image_version_tag }}"
+
+web_app_full_wipe: false

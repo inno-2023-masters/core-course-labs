@@ -1,0 +1,6 @@
+- name: Docker delploy
+  hosts: vms
+  become_method: sudo
+  become: yes
+  roles:
+    - docker

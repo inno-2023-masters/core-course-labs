@@ -1,0 +1,30 @@
+---
+- name: Wipe all containers, images and compose elements
+  become: true
+  tags: wipe
+  block:
+    - name: Stop all containers
+      tags: stop
+      community.docker.docker_container:
+        name: "{{docker_container_name}}"
+        state: stopped
+      ignore_errors: true
+
+    - name: Remove all containers
+      tags: remove
+      community.docker.docker_container:
+        name: "{{docker_container_name}}"
+        state: absent
+
+    - name: Remove all images
+      tags: remove
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        state: absent
+    
+    - name: Remove all compose elements
+      tags: docker-compose
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ lookup('fileglob', 'docker-compose.yml') }}"

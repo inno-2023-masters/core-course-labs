@@ -1,0 +1,76 @@
+/* Your CSS styles go here */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Center the container horizontally */
+    align-items: center; /* Center the container vertically */
+    height: 100vh; /* Ensure the container takes up the full viewport height */
+    overflow: hidden; /* Hide overflow to prevent scrollbars */
+}
+
+.disco-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(50deg, red, orange, yellow, green, blue, darkblue, purple, red);
+    background-size: 400% 400%;
+    animation: discoBackground 1s linear infinite; /* Faster animation */
+}
+
+.container {
+    width: 200px; /* Set a fixed width for the container */
+    height: 200px; /* Set a fixed width for the container */
+    padding: 20px;
+    background-color: white; /* Set container background color to white */
+    box-shadow: none; /* Remove the box shadow */
+    color: transparent; /* Make the text transparent initially */
+    font-size: 30px; /* Font size for the text */
+    font-weight: bold;
+    text-align: center; /* Center-align the text */
+    transform-origin: center; /* Set the rotation origin to the center of the container */
+    animation: rotateContainer 1s linear infinite, sizeChange 0.5s infinite alternate; /* Faster animations */
+    border-radius: 50%; /* Make the container almost round */
+}
+
+@keyframes rotateContainer {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes sizeChange {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes discoBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+h1 {
+    font-size: 36px; /* Increase font size for the header */
+    font-weight: bold;
+    text-align: center; /* Center-align the header */
+    margin-bottom: 20px;
+    color: red;
+}
