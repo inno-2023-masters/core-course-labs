@@ -1,0 +1,39 @@
+- name: Wipe old data before container deploy
+  tags: wipe
+  block: 
+    - name: Include wipe logic
+      ansible.builtin.include_tasks:
+        file: wipe.yml
+  when: web_app_wipe == true
+
+- name: Deliver docker-compose to the target
+  tags: deliver
+  template:
+    src: docker-compose.yml.j2
+    dest: ~/docker-compose.yml
+
+- name: Deploy docker image
+  block:
+  - name: Pull docker image
+    tags: pull
+    community.docker.docker_image:
+      name: "{{docker_image}}"
+      source: pull
+
+  - name: Deploy app container
+    tags: deploy
+    community.docker.docker_container:
+      name: "{{container_name}}"
+      image: "{{docker_image}}"
+      ports:
+        - "{{web_app_port}}:{{web_app_port}}"
+      publish_all_ports: true
+      recreate: true
+      restart: true
+      restart_policy: "always"
+      state: started
+  
+  rescue:
+  - name: Abort on fail to deploy docker image
+    fail:
+      msg: "Failed to deploy {{docker_image}}" 

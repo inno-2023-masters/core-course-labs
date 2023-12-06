@@ -1,0 +1,12 @@
+version: '3'
+services:
+  web_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - visits:/visits
+volumes:
+  visits: {}

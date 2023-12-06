@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-pre-install-job"
+  labels:
+    app: "{{ .Release.Name }}"
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: pre-install-job
+        image: alpine:3.3
+        command: ['sh', '-c', 'sleep 20']

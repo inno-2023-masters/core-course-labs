@@ -1,0 +1,7 @@
+lab_hosts:
+  hosts:
+    yandex_cloud_01:
+      # As during the lab Yandex Cloud machine may change, 
+      # I moved ip address to the /etc/hosts file
+      # in order not to change repo config each time  
+      ansible_host: yc.local

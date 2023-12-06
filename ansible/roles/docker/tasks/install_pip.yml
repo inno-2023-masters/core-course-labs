@@ -1,0 +1,16 @@
+# This task is used in order to ensure that pip
+# is installed because it is used to install
+# docker and docker-compose themselves. As in 
+# role meta it is specified that Debian distro 
+# is required, we can assume that apt package
+# is guaranteed to exist on the machine
+- name: Update apt repos
+  apt:
+    update_cache: true
+  
+- name: Ensure python3 and pip3 are installed
+  apt:
+    name:
+      - python3
+      - python3-pip
+    state: present

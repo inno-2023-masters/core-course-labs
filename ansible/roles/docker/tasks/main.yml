@@ -1,0 +1,24 @@
+# Include all tasks into one to perform the job
+- name: Install dependencies
+  tags: dependencies
+  block:
+    - name: Include install_pip
+      ansible.builtin.include_tasks:
+        file: install_pip.yml
+
+    - name: Include install_docker
+      ansible.builtin.include_tasks:
+        file: install_docker.yml
+
+    - name: Include install_compose
+      ansible.builtin.include_tasks:
+        file: install_compose.yml
+
+    - name: Include check_docker
+      ansible.builtin.include_tasks:
+        file: check_docker.yml
+
+  rescue:
+    - name: Abort on fail to install dependencies
+      fail:
+        msg: "Failed to install dependencies!"

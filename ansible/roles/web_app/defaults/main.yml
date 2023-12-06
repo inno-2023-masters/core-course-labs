@@ -1,0 +1,4 @@
+docker_image: elatypovinno/devops_inno
+container_name: web_app
+web_app_port: 8080
+web_app_wipe: false

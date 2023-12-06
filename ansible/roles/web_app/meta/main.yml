@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Emil Latypov
+  description: Deploy web application in docker container
+
+  license: MIT
+
+  min_ansible_version: 2.15.4
+
+  platforms:
+  - name: Debian
+    versions:
+    - "all"
+
+  galaxy_tags: []
+
+dependencies:
+  - role: docker

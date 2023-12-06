@@ -1,0 +1,35 @@
+- name: Attempt to stop container if it exists
+  block:
+    - name: Stop container
+      tags: wipe
+      community.docker.docker_container:
+        name: "{{container_name}}"
+        state: stopped
+  rescue:
+    - name: Failed to stop container 
+      debug:
+        msg: Failed to stop container
+
+- name: Attempt to delete container if it exists
+  block:
+    - name: Delete container
+      tags: wipe
+      community.docker.docker_container:
+        name: "{{container_name}}"
+        state: absent
+  rescue:
+    - name: Failed to delete container 
+      debug:
+        msg: Failed to delete container
+
+- name: Attempt to delete image if it exists 
+  block:
+    - name: Delete image
+      tags: wipe
+      community.docker.docker_image:
+        name: "{{docker_image}}"
+        state: absent
+  rescue:
+    - name: Failed to delete image
+      debug:
+        msg: Failed to delete image

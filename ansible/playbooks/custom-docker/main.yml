@@ -1,0 +1,13 @@
+- name: Ping all hosts
+  hosts: lab_hosts
+  tasks:
+   - name: Ping my hosts
+     ansible.builtin.ping:
+
+- name: Deploy web application docker container
+  hosts: lab_hosts
+  become: yes
+  roles:
+    - name: web_app
+      vars:
+        web_app_wipe: true

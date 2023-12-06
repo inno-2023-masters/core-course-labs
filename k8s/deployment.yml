@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-node
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-app-node
+  template:
+    metadata:
+      labels:
+        app: web-app-node
+    spec:
+      containers:
+      - name: web-app-node
+        image: docker.io/elatypovinno/devops_inno:latest

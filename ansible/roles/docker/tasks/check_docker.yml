@@ -1,0 +1,21 @@
+# This file is used in order to ensure that
+# docker and docker-compose are installed.
+# As an evidence it displays their versions.
+
+- name: Check docker version
+  ansible.builtin.shell:
+    cmd: docker --version
+  register: docker_version
+
+- name: Check docker-compose version
+  ansible.builtin.shell:
+    cmd: docker-compose --version
+  register: docker_compose_version
+
+- name: Display docker version
+  debug: 
+    msg: "{{ docker_version.stdout }}"
+
+- name: Display docker-compose version
+  debug:
+    msg: "{{ docker_compose_version.stdout }}"
