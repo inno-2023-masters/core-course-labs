@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  {{ app_name | default(web_app) }}:
+    image: "{{ docker_image }}:{{ docker_tag }}"
+    container_name: "{{ docker_container_name }}"
+    ports:
+      - "{{ external_port | default(7098) }}:{{ internal_port | default(7098) }}"
+    restart: unless-stopped

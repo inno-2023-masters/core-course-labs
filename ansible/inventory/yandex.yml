@@ -1,0 +1,5 @@
+yandex:
+  hosts:
+    51.250.29.149:
+  vars:
+    ansible_user: wiirtex

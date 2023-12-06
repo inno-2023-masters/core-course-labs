@@ -1,0 +1,6 @@
+- name: Task2
+  become: yes
+  hosts:
+    yandex
+  roles:
+    - docker

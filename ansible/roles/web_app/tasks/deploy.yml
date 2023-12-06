@@ -1,0 +1,12 @@
+---
+- name: Pull image and run container
+  community.docker.docker_container:
+    name: '{{ docker_container_name }}'
+    image: "{{ docker_image }}:{{ docker_tag }}"
+    exposed_ports:
+      - 7098
+    published_ports:
+      - 7098:7098
+    platform: linux/amd64
+  tags:
+    - deployment

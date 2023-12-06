@@ -1,0 +1,6 @@
+- name: Lab 6
+  become: yes
+  hosts:
+    yandex
+  roles:
+    - web_app
