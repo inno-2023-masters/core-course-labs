@@ -1,0 +1,25 @@
+# Docker
+docker_repository: 'deb https://download.docker.com/linux/ubuntu bionic stable'
+
+docker_packages:
+  - "docker-ce"
+  - "docker-ce-cli"
+  - "docker-ce-rootless-extras"
+  - "containerd.io"
+
+docker_dependencies:
+  - "ca-certificates"
+  - "software-properties-common"
+  - "curl"
+  - "apt-transport-https"
+  - "gnupg-agent"
+
+docker_apt_key: 'https://download.docker.com/linux/ubuntu/gpg'
+
+# Docker Compose
+docker_compose_url: "https://github.com/docker/compose/releases/download/v2.11.1/docker-compose-Linux-x86_64"
+docker_compose_path: '/usr/local/bin/docker-compose'
+docker_compose_mode: 'u+x,g+x'
+
+# Pip
+pip_package: python3-pip

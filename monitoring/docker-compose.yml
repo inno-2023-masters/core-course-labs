@@ -1,0 +1,143 @@
+version: "3"
+
+networks:
+  netw:
+
+services:
+  python_app:
+    image: art22m/pyapp:latest
+    container_name: art22m-container-pyapp
+    ports:
+      - "8000:8000"
+    networks:
+      - netw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+        max-file: "3"
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  go_app:
+    image: art22m/goapp:latest
+    container_name: art22m-container-goapp
+    ports:
+      - "9000:9000"
+    networks:
+      - netw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+        max-file: "3"
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  loki:
+    image: grafana/loki:2.9.1
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - netw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+        max-file: "3"
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  promtail:
+    image: grafana/promtail:2.9.1
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - ./promtail.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - netw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+        max-file: "3"
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9080' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - /run.sh
+    volumes:
+      - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - netw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+        max-file: "3"
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/config.yml
+    command: '--config.file=/etc/prometheus/config.yml'
+    ports:
+      - "9090:9090"
+    networks:
+      - netw
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+        max-file: "3"
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --spider --timeout=1 http://localhost:9090/-/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s

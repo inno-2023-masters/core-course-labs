@@ -1,0 +1,19 @@
+- name: Install Docker dependencies
+  apt:
+    name: "{{ docker_dependencies }}"
+    update_cache: yes
+
+- name: Add Docker apt key
+  apt_key:
+    url: "{{ docker_apt_key }}"
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: "{{ docker_repository }}"
+    state: present
+
+- name: Install Docker
+  apt:
+    name: "{{ docker_packages }}"
+    state: present

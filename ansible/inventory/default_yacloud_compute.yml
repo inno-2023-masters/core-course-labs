@@ -1,0 +1,11 @@
+yandex_vms:
+ hosts:
+   vm01:
+     ansible_host: 51.250.20.249
+ vars:
+   ansible_user: art22m
+
+# plugin: yacloud_compute
+# yacloud_clouds: cloud-art22m
+# yacloud_folders: art22m-test-dev
+# yacloud_token_file: yc.token

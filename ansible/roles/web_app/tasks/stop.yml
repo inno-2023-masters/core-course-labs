@@ -1,0 +1,13 @@
+- name: Stop app
+  tags: stop_app
+  block:
+    - name: Check if docker compose exists
+      stat:
+        path: "{{ docker_compose_file_path }}"
+      register: compose_file_status
+
+    - name: Stop docker compose
+      command: docker-compose -p {{web_app_name}} stop
+      args:
+            chdir: "{{ docker_compose_path }}"
+      when: compose_file_status.stat.exists == true

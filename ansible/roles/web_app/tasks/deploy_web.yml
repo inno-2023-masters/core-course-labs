@@ -1,0 +1,33 @@
+- name: Deploy app
+  tags: deploy_app
+  block:
+    - name: Create app dir
+      file:
+        path: "{{ web_app_dir }}"
+        state: directory
+        mode: 0755
+
+    - name: Create docker compose dir
+      file:
+        path: "{{ docker_compose_path }}"
+        state: directory
+        mode: 0755
+
+    - name: Create directory for volume
+      file:
+        path: "{{ volume_path }}"
+        state: directory
+        mode: 0755
+
+    - name: Copy volume file
+      template:
+        src: "{{ volume_file_name }}.j2"
+        dest: "{{ volume_file_path }}"
+        mode: 0777
+
+    - name: Run docker compose
+      template:
+        src: "{{ docker_compose_file }}.j2"
+        dest: "{{ docker_compose_file_path }}"
+        mode: 0755
+      notify: docker_restart_handler

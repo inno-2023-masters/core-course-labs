@@ -1,0 +1,5 @@
+apiVersion: v2
+name: labels-libchart
+description: A Helm library chart
+type: library
+version: 0.1.0
