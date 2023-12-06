@@ -5,7 +5,7 @@ networks:
 
 services:
   python_app:
-    image: wiirtex/python_time_service:0.3.0
+    image: wiirtex/python_time_service:0.4.0
     container_name: python_app
     ports:
       - "7098:7098"
@@ -13,6 +13,8 @@ services:
       driver: "json-file"
       options:
         tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    networks:
+      - loki
 
   loki:
     image: grafana/loki:2.9.1
@@ -61,3 +63,32 @@ services:
       driver: "json-file"
       options:
         tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus-config.yml"
+    command:
+      - "--config.file=/etc/prometheus/prometheus-config.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --tries=1 --spider http://localhost:9090/status || exit 1" ]
+      timeout: 10s
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 750m
+    logging:
+      driver: "json-file"
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    networks:
+      - loki

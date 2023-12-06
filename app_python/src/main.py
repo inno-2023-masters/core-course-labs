@@ -4,6 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 import logging
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 logging.basicConfig(
     format="%(asctime)-s  %(levelname)-8s: %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S"
@@ -17,6 +19,7 @@ app.include_router(timerRouter.router)
 
 
 def main():
+    Instrumentator().instrument(app).expose(app)
     uvicorn.run(app, host="0.0.0.0", port=7098)
 
 
