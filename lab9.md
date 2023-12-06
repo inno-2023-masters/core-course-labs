@@ -1,12 +1,10 @@
 # Lab 9: Introduction to Kubernetes
 
-## Overview
-
-In this lab, you will explore Kubernetes, set up a local development environment, and create manifests for your application.
-
 ## Task 1: Kubernetes Setup and Basic Deployment
 
 **6 Points:**
+
+In this lab, you will explore Kubernetes, set up a local development environment, and create manifests for your application.
 
 1. Learn About Kubernetes:
    - Begin by studying the fundamentals of Kubernetes:
@@ -53,7 +51,7 @@ In this lab, you will explore Kubernetes, set up a local development environment
 2. Service Manifest:
    - Develop a `service.yml` manifest file for your application.
 
-3. Manifest Files in `k8s` Folder:
+3.  Manifest Files in `k8s` Folder:
    - Store these manifest files in the `k8s` folder of your repository.
    - Additionally, provide the output of the `kubectl get pods,svc` command in the `README.md` report.
    - Include the output of the `minikube service --all` command and the result from your browser, with a screenshot demonstrating that the IP matches the output of `minikube service --all`.

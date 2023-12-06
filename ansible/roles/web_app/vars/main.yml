@@ -1,0 +1,6 @@
+---
+# vars file for deploy_app
+remote_install_path: /opt/python_app
+docker_image_name: Arseniy172/devops-python-app
+docker_image_version: latest
+docker_compose_name: docker-compose.yml
