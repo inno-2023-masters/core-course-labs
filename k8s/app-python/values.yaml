@@ -1,0 +1,160 @@
+# Default values for app-python.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+postInstall:
+  sleepyTime: 15s
+
+preInstall:
+  sleepyTime: 15s
+
+
+image:
+  repository: iskanred/app_python
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.0.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+   limits:
+     cpu: 100m
+     memory: 128Mi
+   requests:
+     cpu: 100m
+     memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+env:
+  - name: HELM_SECRET_EXAMPLE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: helm-secret-example
+        key: password
+
+envFrom:
+  - configMapRef:
+      name: configmap
+
+# Additional volumes on the output Deployment definition.
+volumes:
+  - name: config-volume
+    configMap:
+      name: configmap
+  - name: init-files
+    emptyDir:
+      sizeLimit: 10Mi
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  - name: config-volume
+    mountPath: "config.json"
+    subPath: config.json
+  - name: visits
+    mountPath: "app-python/visits_dir"
+  - name: init-files
+    mountPath: /init-files
+
+volumeClaimTemplates:
+  - metadata:
+      name: visits
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Mi
+
+initContainers:
+  - name: init-step-1
+    image: busybox:1.28
+    command: [ "wget", "-O", "/init-files/index-0.html", "http://info.cern.ch" ]
+    volumeMounts:
+    - name: init-files
+      mountPath: /init-files
+  - name: init-step-2
+    image: busybox:1.28
+    command:  [ "wget", "-O", "/init-files/index-1.html", "http://info.cern.ch" ]
+    volumeMounts:
+      - name: init-files
+        mountPath: /init-files
+  - name: init-step-3
+    image: busybox:1.28
+    command:  [ "wget", "-O", "/init-files/index-2.html", "http://info.cern.ch" ]
+    volumeMounts:
+      - name: init-files
+        mountPath: /init-files
+  - name: init-step-4
+    image: busybox:1.28
+    command:  [ "wget", "-O", "/init-files/index-3.html", "http://info.cern.ch" ]
+    volumeMounts:
+      - name: init-files
+        mountPath: /init-files
+
+statefulSet:
+  podManagementPolicy: Parallel
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

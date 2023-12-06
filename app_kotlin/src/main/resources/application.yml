@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: app_kotlin
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info, metrics
+  prometheus:
+    metrics:
+      export:
+        enabled: true

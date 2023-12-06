@@ -1,0 +1,27 @@
+- name: Deploy Application using Docker
+  when: web_app_deployment_way == "docker"
+  docker_container:
+    name: "{{ docker_container_name }}"
+    image: "{{ docker_image }}"
+    state: started
+    published_ports:
+      - "{{ external_port }}:{{ internal_port }}"
+    restart_policy: unless-stopped
+    restart: true
+    recreate: true
+
+- name: Deploy Application using Docker-Compose
+  when: web_app_deployment_way == "compose"
+  block:
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+
+    # Since handler will be notified
+    #  docker-compose will run automatically
+    - name: Create Docker-Compose file from template
+      template:
+        src: "docker-compose.yml.j2"
+        dest: "{{ docker_compose_filepath }}"
+      notify: docker_compose_restart_handler

@@ -1,0 +1,37 @@
+# Installation follows recommendations from:
+# https://docs.docker.com/engine/install/ubuntu/
+- name: Install docker
+  block:
+    - name: Uninstall old versions of docker via apt
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+          - docker-doc
+          - podman-docker
+        state: absent
+
+    - name: Install dependencies
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    - name: Set docker apt key
+      apt_key:
+        url: "{{ docker_apt_key_url }}"
+
+    - name: Set docker apt repo
+      apt_repository:
+        repo: "{{ docker_apt_repo }}"
+
+    - name: Install docker via apt
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+        state: present

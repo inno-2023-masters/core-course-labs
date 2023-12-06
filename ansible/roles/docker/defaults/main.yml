@@ -1,0 +1,4 @@
+docker_apt_key_url: "https://download.docker.com/linux/ubuntu/gpg"
+docker_apt_repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+
+pip_docker_compose_version: "1.29.2"  # https://pypi.org/project/docker-compose/

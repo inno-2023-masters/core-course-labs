@@ -1,0 +1,114 @@
+name: Python CI
+
+on:
+  pull_request:
+    paths:
+      - app_python/**
+      - .github/workflows/CI-python.yml
+
+defaults:
+  run:
+    working-directory: ./app_python
+
+env:
+  PROJECT_DIR: ./app_python
+  REQUIREMENTS_DEV_DIR: requirements/requirements-dev.txt
+  REQUIREMENTS_PROD_DIR: requirements/requirements-prod.txt
+
+jobs:
+  ### Analyze Security Vulnerabilities
+  security:
+    name: Analyze Security Vulnerabilities
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python-3.10@master
+        # to make sure that SARIF upload gets called
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args:
+            --sarif-file-output=snyk.sarif
+            --file=${{ env.PROJECT_DIR }}/${{ env.REQUIREMENTS_DEV_DIR }}
+            --file=${{ env.PROJECT_DIR }}/${{ env.REQUIREMENTS_PROD_DIR }}
+            --package-manager=pip
+            --skip-unresolved
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          checkout_path: ${{ env.PROJECT_DIR }}
+          sarif_file: snyk.sarif
+      - name: Upload result to workflow artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          # tests and linter reports
+          name: snyk.sarif
+          path: snyk.sarif
+
+  # Verify changes (Lint & Test)
+  verify:
+    name: Verify
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+          cache: pip
+          cache-dependency-path: ${{ env.PROJECT_DIR }}/${{ env.REQUIREMENTS_PROD_DIR }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r ${{ env.REQUIREMENTS_PROD_DIR }}
+      - name: Run linter ruff
+        uses: chartboost/ruff-action@v1
+        with:
+          version: 0.0.290
+      - name: Test with pytest
+        run: pytest --junitxml=junit/test-report.xml
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: ${{ env.PROJECT_DIR }}/junit/test-report.xml
+
+  ### Build & Push Docker Image
+  build-push-docker:
+    name: Build & Push Docker Image
+    needs:
+      - security
+      - verify
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      # No need for checkout because Buildx takes current Git context:
+      # https://github.com/docker/build-push-action#git-context
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        env:
+          DOCKER_IMAGE_NAME: app_python
+          DOCKER_IMAGE_VERSION: 1.0.0
+        with:
+          context: "{{defaultContext}}:${{ env.PROJECT_DIR }}"
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_VERSION }}
+          # https://docs.docker.com/build/ci/github-actions/cache/#github-cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

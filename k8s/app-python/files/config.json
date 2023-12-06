@@ -1,0 +1,10 @@
+{
+    "auth": {
+        "required": true,
+        "username": "admin",
+        "password": "admin",
+        "access": {
+            "path": "**/*"
+        }
+    }
+}

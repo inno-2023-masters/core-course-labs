@@ -1,0 +1,10 @@
+- name: Check necessary flags
+  block:
+    - name: Check web_app_deployment_way
+      when:
+        - web_app_deployment_way != "docker"
+        - web_app_deployment_way != "compose"
+      fail:
+        msg:
+          "`web_app_deployment_way` variable must be provided explicitly with the
+            following possible values: `docker` or `compose`"

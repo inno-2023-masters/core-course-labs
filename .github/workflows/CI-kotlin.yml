@@ -1,0 +1,104 @@
+name: Kotlin CI
+
+on:
+  pull_request:
+    paths:
+      - app_kotlin/**
+      - .github/workflows/CI-kotlin.yml
+
+defaults:
+  run:
+    working-directory: ./app_kotlin
+
+env:
+  PROJECT_DIR: ./app_kotlin
+
+jobs:
+  ### Analyze Security Vulnerabilities
+  security:
+    name: Analyze Security Vulnerabilities
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/gradle-jdk17@master
+        # to make sure that SARIF upload gets called
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args:
+            --sarif-file-output=snyk.sarif
+            ${{ env.PROJECT_DIR }}
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          checkout_path: ${{ env.PROJECT_DIR }}
+          sarif_file: snyk.sarif
+      - name: Upload result to workflow artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          # tests and linter reports
+          name: snyk.sarif
+          path: snyk.sarif
+
+  ### Check (Test & Lint)
+  check:
+    name: Check (Test & Lint)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.2.1
+      - name: Check
+        run: ./gradlew check
+      - name: Upload build reports
+        uses: actions/upload-artifact@v3
+        with:
+          # tests and linter reports
+          name: build-reports
+          path: ${{ env.PROJECT_DIR }}/build/reports/
+
+  ### Build & Push Docker Image
+  build-push-docker:
+    name: Build & Push Docker Image
+    needs:
+      - security
+      - check
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      # No need for checkout because Buildx takes current Git context:
+      # https://github.com/docker/build-push-action#git-context
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        env:
+          DOCKER_IMAGE_NAME: app_kotlin
+          DOCKER_IMAGE_VERSION: 1.0.0
+        with:
+          context: "{{defaultContext}}:${{ env.PROJECT_DIR }}"
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_VERSION }}
+          # https://docs.docker.com/build/ci/github-actions/cache/#github-cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

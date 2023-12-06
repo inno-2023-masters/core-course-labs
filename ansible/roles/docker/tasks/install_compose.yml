@@ -1,0 +1,10 @@
+### Docker Compose for Python ###
+# https://pypi.org/project/docker-compose/
+# A Python library for the Docker Compose API.
+
+# Uses 'pip' package manager to install docker as python module
+- name: Install docker-compose via pip
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/pip_module.html#ansible-collections-ansible-builtin-pip-module
+  pip:
+    name: "docker-compose=={{pip_docker_compose_version}}"
+    state: present

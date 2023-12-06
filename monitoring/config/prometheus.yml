@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  # Python app
+  - job_name: app-python
+    static_configs:
+      - targets: [app-python:8080]
+
+  # Kotlin app
+  - job_name: app-kotlin
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [app-kotlin:8080]
+
+  # Loki
+  - job_name: loki
+    static_configs:
+      - targets: [loki:3100]
+
+  # Promtail
+  - job_name: promtail
+    static_configs:
+      - targets: [promtail:9080]
+
+  # Grafana
+  - job_name: grafana
+    static_configs:
+      - targets: [grafana:3000]
+
+  # Prometheus
+  - job_name: prometheus
+    static_configs:
+      - targets: [localhost:9090]

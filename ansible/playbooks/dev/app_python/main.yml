@@ -1,0 +1,13 @@
+- name: Deploy Python Application
+  hosts: all
+  become: true
+  roles:
+    - name: web_app
+      vars:
+        app_name: app_python
+        docker_image_name: iskanred/app_python
+        docker_image_version: 1.0.0
+        docker_container_name: app_python_container
+        internal_port: 8080
+        external_port: 8080
+        web_app_deployment_way: "compose"

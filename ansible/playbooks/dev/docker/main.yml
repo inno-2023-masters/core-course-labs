@@ -1,0 +1,13 @@
+## Existing role utilization
+#- name: Deploy Docker
+#  hosts: all
+#  become: true
+#  roles:
+#    - role: geerlingguy.docker
+
+# Created role utilization
+- name: Deploy Docker
+  hosts: all
+  become: true
+  roles:
+    - name: docker

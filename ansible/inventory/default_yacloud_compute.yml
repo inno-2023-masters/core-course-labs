@@ -1,0 +1,4 @@
+plugin: yacloud_compute
+yacloud_clouds: cloud-iskanred
+yacloud_folders: iu-devops-course
+yacloud_token_file: secrets/yacloud.token

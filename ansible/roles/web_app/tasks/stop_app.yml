@@ -1,0 +1,33 @@
+- name: Stop Application using Docker
+  when:
+    - web_app_full_stop
+    - web_app_deployment_way == "docker"
+  block:
+    - name: Get container info
+      docker_container_info:
+        name: "{{ docker_container_name }}"
+      register: container_info
+
+    - name: Stop container if it is running
+      when:
+        - container_info.exists
+        - container_info.container["State"]["Status"] == "running"
+      docker_container:
+        name: "{{ docker_container_name }}"
+        state: stopped
+
+- name: Stop Application using Docker-Compose
+  when:
+    - web_app_full_stop
+    - web_app_deployment_way == "compose"
+  block:
+    - name: Check Docker-Compose file exists
+      stat:
+        path: "{{ docker_compose_filepath }}"
+      register: compose_file_stat
+
+    - name: Stop Docker-Compose services
+      when: compose_file_stat.stat.exists
+      command: "docker-compose -p {{ app_name }} stop"
+      args:
+        chdir: "{{ app_dir }}"

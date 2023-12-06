@@ -1,0 +1,21 @@
+# The main file which role will execute
+
+- name: Update apt
+  include_tasks:
+    file: update_apt.yml
+  tags: update-apt
+
+- name: Install docker using apt
+  include_tasks:
+    file: install_docker.yml
+  tags: install-docker
+
+- name: Install pip
+  include_tasks:
+    file: install_pip.yml
+  tags: install-pip
+
+- name: Install docker-compose using pip
+  include_tasks:
+    file: install_compose.yml
+  tags: install-compose
