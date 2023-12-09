@@ -1,12 +1,10 @@
 # Lab 10: Introduction to Helm
 
-## Overview
-
-In this lab, you will become familiar with Helm, set up a local development environment, and generate manifests for your application.
-
 ## Task 1: Helm Setup and Chart Creation
 
 **6 Points:**
+
+In this lab, you will become familiar with Helm, set up a local development environment, and generate manifests for your application.
 
 1. Learn About Helm:
    - Begin by exploring the architecture and concepts of Helm:
@@ -41,8 +39,6 @@ In this lab, you will become familiar with Helm, set up a local development envi
 
 8. Pull Request in Your Repository:
    - Create a PR in your repository, connecting the lab10 branch to the main or lab9 branch.
-
-## Task 2: Helm Chart Hooks
 
 **4 Points:**
 

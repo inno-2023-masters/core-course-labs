@@ -1,0 +1,6 @@
+---
+- name: Deploy app from docker-compose.yml
+  hosts: web
+  become: yes
+  roles:
+    - ../roles/web_app

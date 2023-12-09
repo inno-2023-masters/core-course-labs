@@ -1,0 +1,17 @@
+- name: Update apt, install docker and docker-compose
+  hosts: web
+  become: yes
+
+  vars:
+    # apt_packages:
+    #   - name: python3
+    #   - name: python3-pip
+    #   - name: python3-setuptools
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+  
+  roles:
+    - weareinteractive.apt
+    - geerlingguy.pip
+    - geerlingguy.docker

@@ -1,12 +1,10 @@
 # Ansible 2
 
-## Overview
-
-In this lab, you will utilize Ansible to set up a Continuous Deployment (CD) process for your application.
-
 ## Task 1: Application Deployment
 
 **6 Points:**
+
+In this lab, you will utilize Ansible to set up a Continuous Deployment (CD) process for your application.
 
 1. Create an Ansible Role:
    - Develop an Ansible role specifically for deploying your application's Docker image. Call it `web_app`
@@ -82,6 +80,11 @@ In this lab, you will utilize Ansible to set up a Continuous Deployment (CD) pro
                `-- app_go
                    `-- main.yaml
    ```
+
+2. Application Improvements:
+
+   - Enhance your application by integrating relevant metrics.
+   - Strengthen your application's reliability by implementing a healthcheck mechanism.
 
 **Guidelines:**
 

@@ -13,11 +13,10 @@ In this task, you'll enhance your application to persist data and explore Config
 1. Upgrade Your Application:
    - Modify your application to:
      - Implement a counter logic in your application to keep track of the number of times it's accessed.
-     - Save the counter number in the `visits` file.
      - Introduce a new endpoint `/visits` to display the recorded visits.
    - Test the changes:
-     - Update your `docker-compose.yml` to include a new volume with your `visits` file.
-     - Verify that the enhancements work as expected, you must see the updated number in the `visits` file on the host machine.
+     - Update your `docker-compose.yml` to include a new volume.
+     - Verify that the enhancements work as expected.
      - Update the `README.md` for your application.
 
 2. Create Pull Requests:

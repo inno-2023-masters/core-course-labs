@@ -1,0 +1,7 @@
+---
+- name: Install docker and docker-compose
+  hosts: web
+  become: yes
+  roles:
+    - geerlingguy.docker
+    - web_app

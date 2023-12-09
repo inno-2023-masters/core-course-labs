@@ -1,7 +1,5 @@
 # Ansible and Docker Deployment
 
-## Overview
-
 In this lab, you will get acquainted with Ansible, a powerful configuration management and automation tool. Your objective is to use Ansible to deploy Docker on a newly created cloud VM. This knowledge will be essential for your application deployment in the next lab.
 
 ## Task 1: Initial Setup
@@ -65,7 +63,7 @@ In this lab, you will get acquainted with Ansible, a powerful configuration mana
 1. Create Your Custom Docker Role:
    - Develop a custom Ansible role for Docker with the following tasks:
      1. Install pip.
-     2. Install Docker using apt and Docker Compose using pip.
+     2. Install Docker and Docker Compose using pip.
      3. Update your playbook to utilize this custom role. [Tricks and Tips](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html).
      4. Test your playbook with the custom role to ensure successful deployment.
 

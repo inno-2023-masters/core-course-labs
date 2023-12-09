@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-web-app
+  labels:
+    app: python-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: python-web
+  template:
+    metadata:
+      labels:
+        app: python-web
+    spec:
+      containers:
+      - name: python-web
+        image: Arseniy172/devops-course-app:python
+        ports:
+        - containerPort: 8000
+
